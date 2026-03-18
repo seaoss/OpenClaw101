@@ -1,0 +1,517 @@
+# 🦞 OpenClaw 新人入坑指南
+
+> 基于真实生产环境踩坑经验编写 · 老司机带你飞，拒绝干巴巴
+
+---
+
+## OpenClaw 是啥？
+
+一句话：**OpenClaw 是一个本地部署的 AI Agent 网关**，让你用一套配置把 Claude/GPT 等大模型接入飞书、钉钉、Telegram、QQ、企业微信等各种聊天平台，还能跑定时任务、多 Agent 协作。
+
+简单说就是——**你的 AI 助手中控台** 🎛️
+
+---
+
+## 30 分钟快速上手
+
+### 环境准备
+
+- Linux 服务器（推荐 2C4G 起步，有公网 IP 更好）
+- Node.js ≥ 22（`node -v` 检查一下）
+- 一个大模型的 API Key（Anthropic / OpenAI / 万界方舟等）
+
+### 安装
+
+```bash
+# 通过 npm 全局安装
+npm install -g openclaw
+
+# 验证安装
+openclaw --version
+```
+
+### 初始化
+
+```bash
+# 交互式引导，跟着走就行
+openclaw onboard
+```
+
+这一步会在 `~/.openclaw/` 下生成核心配置文件 `openclaw.json`。
+
+### 跑起来
+
+```bash
+# 启动 Gateway
+openclaw gateway start
+
+# 看看状态
+openclaw gateway status
+
+# 查看日志（排错必备）
+openclaw gateway logs
+```
+
+看到 Gateway 在跑了？恭喜，你已经入门了 🎉
+
+---
+
+## 核心配置一把梭
+
+配置文件路径：`~/.openclaw/openclaw.json`
+
+整体结构长这样（精简版）：
+
+```jsonc
+{
+  "models": { ... },      // 模型配置（接谁家的 AI）
+  "agents": { ... },      // Agent 列表（你的 AI 分身们）
+  "channels": { ... },    // 聊天渠道（飞书、钉钉等）
+  "bindings": [ ... ],    // 绑定关系（哪个 Agent 管哪个群）
+  "tools": { ... },       // 工具（搜索、浏览器等）
+  "gateway": { ... },     // 网关设置（端口、认证）
+  "plugins": { ... },     // 插件管理
+  "commands": { ... },    // 命令配置
+  "messages": { ... }     // 消息行为配置
+}
+```
+
+### 重点字段速查
+
+| 字段 | 说明 | 踩坑提示 |
+|------|------|----------|
+| `gateway.port` | 网关端口 | 防火墙记得放行 |
+| `gateway.bind` | 绑定范围 | `lan` = 局域网，`localhost` = 仅本机 |
+| `gateway.auth.token` | 认证 token | 别用太简单的，别泄露 |
+| `agents.defaults.model.primary` | 默认模型 | 格式：`供应商/模型ID` |
+| `agents.defaults.subagents.maxConcurrent` | 子任务并发数 | 默认 8，别贪心设太高 |
+| `messages.ackReactionScope` | 消息确认范围 | `group-mentions` = 群里只回复 @我 的 |
+
+---
+
+## 接入聊天渠道
+
+### 通用步骤
+
+1. 把插件 `.tgz` 包丢到服务器（比如 `/tmp/`）
+2. 安装插件（通过 `openclaw` CLI 或直接解压到 `~/.openclaw/extensions/`）
+3. 在 `openclaw.json` 的 `channels` 里配上凭证
+4. 在 `plugins.entries` 里启用
+5. 重启 Gateway
+
+### 飞书
+
+去 [飞书开放平台](https://open.feishu.cn/) 创建企业自建应用，拿到 App ID 和 App Secret。
+
+```json
+"feishu": {
+  "enabled": true,
+  "appId": "cli_你的appId",
+  "appSecret": "你的appSecret"
+}
+```
+
+> ⚠️ 需要在飞书后台配好事件回调地址（指向你的 Gateway 公网地址）和权限。
+
+### 钉钉
+
+去 [钉钉开放平台](https://open.dingtalk.com/) 创建应用，拿到 Client ID 和 Client Secret。
+
+```json
+"dingtalk": {
+  "enabled": true,
+  "clientId": "dingXXXXXXXX",
+  "clientSecret": "你的clientSecret"
+}
+```
+
+### Telegram
+
+找 [@BotFather](https://t.me/BotFather) 创建 Bot，拿到 Token。
+
+```json
+"telegram": {
+  "enabled": true,
+  "botToken": "123456789:AAxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "dmPolicy": "pairing",
+  "groupPolicy": "allowlist",
+  "streamMode": "partial"
+}
+```
+
+> 💡 `streamMode: "partial"` 可以让回复边生成边发送，体验更好。`groupPolicy: "allowlist"` 防止被拉进奇怪的群。
+
+### QQ Bot
+
+去 [QQ 开放平台](https://q.qq.com/) 创建机器人，拿到 App ID 和 Client Secret。
+
+```json
+"qqbot": {
+  "enabled": true,
+  "appId": "你的appId",
+  "clientSecret": "你的clientSecret"
+}
+```
+
+### 企业微信
+
+在企业微信管理后台创建自建应用，配置接收消息 API，拿到 Token 和 EncodingAESKey。
+
+```json
+"wecom": {
+  "enabled": true,
+  "token": "你的token",
+  "encodingAESKey": "你的encodingAESKey"
+}
+```
+
+### 插件启用模板
+
+每个渠道插件安装后，`plugins` 区域这样配：
+
+```json
+"plugins": {
+  "entries": {
+    "feishu": { "enabled": true },
+    "dingtalk": { "enabled": true },
+    "telegram": { "enabled": true },
+    "qqbot": { "enabled": true },
+    "wecom": { "enabled": true }
+  }
+}
+```
+
+---
+
+## 模型接入
+
+### 万界方舟（推荐，国内访问友好）
+
+```json
+"models": {
+  "mode": "merge",
+  "providers": {
+    "WanJie": {
+      "baseUrl": "https://maas-openapi.wanjiedata.com/api/anthropic",
+      "apiKey": "你的万界方舟API_Key",
+      "api": "anthropic-messages",
+      "models": [
+        {
+          "id": "claude-opus-4-6",
+          "name": "Claude Opus 4.6",
+          "reasoning": false,
+          "input": ["text"],
+          "contextWindow": 200000,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  }
+}
+```
+
+### 通用 Anthropic 直连模板
+
+```json
+"providers": {
+  "Anthropic": {
+    "baseUrl": "https://api.anthropic.com",
+    "apiKey": "sk-ant-xxxxx",
+    "api": "anthropic-messages",
+    "models": [
+      {
+        "id": "claude-sonnet-4-20250514",
+        "name": "Claude Sonnet 4",
+        "contextWindow": 200000,
+        "maxTokens": 8192
+      }
+    ]
+  }
+}
+```
+
+### 通用 OpenAI 兼容模板
+
+```json
+"providers": {
+  "MyOpenAI": {
+    "baseUrl": "https://api.openai.com/v1",
+    "apiKey": "sk-xxxxx",
+    "api": "openai-chat",
+    "models": [
+      {
+        "id": "gpt-4o",
+        "name": "GPT-4o",
+        "contextWindow": 128000,
+        "maxTokens": 4096
+      }
+    ]
+  }
+}
+```
+
+> 📌 **引用模型**：在 Agent 配置里用 `供应商名/模型id` 格式，比如 `WanJie/claude-opus-4-6`。
+
+---
+
+## 玩转多 Agent
+
+### 为什么需要？
+
+一个助手打天下容易人格分裂。比如你想要：
+- **main**：通用助手，处理日常问答
+- **kol**（大K）：专门管某个飞书群，有独立人设和记忆
+
+### 怎么配？
+
+```json
+"agents": {
+  "defaults": {
+    "model": { "primary": "WanJie/claude-opus-4-6" },
+    "workspace": "/root/.openclaw/workspace",
+    "subagents": { "maxConcurrent": 8 }
+  },
+  "list": [
+    {
+      "id": "main",
+      "default": true,
+      "workspace": "/root/.openclaw/workspace"
+    },
+    {
+      "id": "kol",
+      "name": "大K",
+      "workspace": "/root/.openclaw/workspace-kol"
+    }
+  ]
+}
+```
+
+> 🔑 **关键点**：每个 Agent 有独立的 `workspace`，意味着独立的记忆（`SOUL.md`、`MEMORY.md` 等）和文件。
+
+### 怎么绑定渠道？
+
+通过 `bindings` 数组，把 Agent 绑到特定渠道 + 群组：
+
+```json
+"bindings": [
+  {
+    "agentId": "kol",
+    "match": {
+      "channel": "feishu",
+      "peer": {
+        "kind": "group",
+        "id": "oc_你的飞书群ID"
+      }
+    }
+  }
+]
+```
+
+没匹配到 binding 的消息，走 `default: true` 的 Agent。
+
+---
+
+## 定时任务 (Cron)
+
+OpenClaw 支持两种定时任务模式，**选错了会很痛苦**：
+
+### 模式对比
+
+| | 主会话模式 | 独立会话模式 |
+|---|---|---|
+| `sessionTarget` | `"main"` | `"isolated"` |
+| `payload.kind` | `"systemEvent"` | `"agentTurn"` |
+| 依赖主会话？ | ✅ 是 | ❌ 否 |
+| 可靠性 | 一般 | **高** |
+| 适用场景 | 需要上下文的检查 | 独立执行的任务 |
+
+### 推荐配置（独立模式）
+
+```json
+{
+  "type": "cron",
+  "cron": "0 9 * * 1",
+  "sessionTarget": "isolated",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "生成本周工作周报并发送到飞书群"
+  }
+}
+```
+
+### 一次性定时（at 类型）
+
+```json
+{
+  "type": "at",
+  "atMs": 1703275200000,
+  "sessionTarget": "isolated",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "提醒我开会"
+  }
+}
+```
+
+> ⚠️ **注意**：`atMs` 是 **Unix 毫秒时间戳**，不是秒！用 `Date.now()` 获取当前毫秒时间戳。
+>
+> ⚠️ **别一口气批量创建太多 cron 任务**，Gateway 可能超时。一个一个来，稳。
+
+---
+
+## 日常使用技巧
+
+### 聊天
+直接在任意接入的渠道 @你的 Bot 或私聊即可。群里默认只响应 @ 消息（可配置）。
+
+### 网页搜索
+配好 Brave Search 就能用：
+
+```json
+"tools": {
+  "web": {
+    "search": {
+      "enabled": true,
+      "provider": "brave",
+      "apiKey": "你的Brave_Search_API_Key"
+    }
+  }
+}
+```
+
+> Brave Search 免费计划 **每月 2000 次**，省着点用。
+
+### 子任务（并行大法）
+AI 可以自己 spawn 子 Agent 并行处理任务，最多 8 个同时跑。特别适合：
+- 批量生成内容（一次写 10 篇文章摘要）
+- 并行搜索 + 汇总
+- 多文件同时处理
+
+### 斜杠命令
+聊天中可以用 `/` 开头的命令：
+- `/status` — 查看当前状态
+- `/reasoning` — 切换推理模式
+
+---
+
+## 踩坑血泪史 😭
+
+### 🕳️ Cron 任务的坑
+
+> "我设了个定时任务，到点了怎么没反应？"
+
+八成是用了 `sessionTarget: "main"` + `payload.kind: "systemEvent"`。这玩意儿需要主会话在线才处理。换成 `"isolated"` + `"agentTurn"`，世界就清静了。
+
+另外，**别一口气批量创建太多 cron 任务**，Gateway 可能超时。一个一个来，稳。
+
+### 🕳️ Brave Search 额度爆了
+
+免费计划每月 2000 次，听着挺多？如果你的定时任务每小时都在搜，分分钟用光。**定时任务频率别设太高**，或者升级付费计划。
+
+### 🕳️ Cloudflare 部署的坑
+
+如果你用 Cloudflare Pages 部署静态站：
+- **Framework preset 别选 Next.js**！它会自动套 OpenNext 适配器，纯静态站会挂。选 `None`。
+- `wrangler deploy` 是部署 Workers，`wrangler pages deploy` 才是部署 Pages，别搞混。
+
+### 🕳️ 时间戳的坑
+
+`at` 类型定时任务的 `atMs` 是**毫秒**时间戳。写成秒的话，你的提醒会在 1970 年触发 🤡
+
+### 🕳️ 渠道插件不生效
+
+插件是 `.tgz` 格式，解压到 `~/.openclaw/extensions/` 目录。如果插件不生效，检查：
+1. `plugins.entries` 里有没有 `"enabled": true`
+2. `channels` 里凭证有没有填对
+3. Gateway 有没有重启
+
+---
+
+## 常见问题 FAQ
+
+**Q: Gateway 启动失败？**
+> 先检查端口占用（`lsof -i :18789`），再看日志（`openclaw gateway logs`）。
+
+**Q: 机器人不回消息？**
+> 排查清单：
+> 1. Gateway 在跑吗？（`openclaw gateway status`）
+> 2. 渠道回调地址配对了吗？（需要公网可访问）
+> 3. `channels` 里凭证对了吗？
+> 4. 插件 `enabled: true` 了吗？
+> 5. 群里是不是忘了 @ ？
+
+**Q: 怎么更新 OpenClaw？**
+> `npm update -g openclaw`，然后 `openclaw gateway restart`。
+
+**Q: 多个 Agent 会串台吗？**
+> 不会。每个 Agent 有独立 workspace 和独立会话。通过 `bindings` 明确谁管哪里。
+
+**Q: 模型可以混用吗？**
+> 可以。`providers` 里配多个供应商，不同 Agent 可以指定不同模型。
+
+**Q: 子任务有数量限制吗？**
+> `maxConcurrent` 控制并发数，默认 8。不是总数限制，是同时在跑的上限。
+
+**Q: 企业微信/飞书需要公网 IP 吗？**
+> 是的，回调地址需要公网可达。可以用 Cloudflare Tunnel、frp 等内网穿透方案。
+
+---
+
+## 附：最小可用配置模板
+
+把这个存为 `~/.openclaw/openclaw.json`，改掉占位符就能跑：
+
+```json
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "MyProvider": {
+        "baseUrl": "https://api.anthropic.com",
+        "apiKey": "你的API_KEY",
+        "api": "anthropic-messages",
+        "models": [{
+          "id": "claude-sonnet-4-20250514",
+          "name": "Claude Sonnet 4",
+          "contextWindow": 200000,
+          "maxTokens": 8192
+        }]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": { "primary": "MyProvider/claude-sonnet-4-20250514" },
+      "workspace": "/root/.openclaw/workspace"
+    },
+    "list": [
+      { "id": "main", "default": true }
+    ]
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "auth": { "mode": "token", "token": "换成你自己的随机token" }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "你的Telegram_Bot_Token"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true }
+    }
+  }
+}
+```
+
+---
+
+> 🎯 **记住**：OpenClaw 的核心思路就是 **一个 JSON 管所有**。模型、渠道、Agent、工具，全在 `openclaw.json` 里。改完重启 Gateway 生效。
+>
+> 有问题？先看日志。日志没线索？检查配置。配置没问题？那大概率是平台那边的坑。
+>
+> Happy hacking! 🐾

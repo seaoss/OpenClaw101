@@ -6,6 +6,7 @@ export default {
   advanced: '🧠 进阶功能',
   cases: '💡 实战案例',
   expert: '🔧 专家进阶',
+  ecosystem: '🌐 生态导航',
   videos: '🎬 视频教程',
   faq: '❓ 常见问题',
   assessment: {

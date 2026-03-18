@@ -25,6 +25,29 @@ export default function IndexPage() {
         </div>
       </div>
 
+      {/* Newbie Guide Banner */}
+      <div className={styles.newbieBanner}>
+        <div className={styles.newbieBannerContent}>
+          <span className={styles.newbieBannerIcon}>🦞</span>
+          <div className={styles.newbieBannerText}>
+            <h2 className={styles.newbieBannerTitle}>新人入坑指南</h2>
+            <p className={styles.newbieBannerDesc}>
+              一篇文章搞定 OpenClaw 配置 + 使用，真实踩坑经验，老司机带你飞
+            </p>
+            <div className={styles.newbieBannerHighlights}>
+              <span className={styles.newbieTag}>⚡ 30分钟上手</span>
+              <span className={styles.newbieTag}>📱 5大渠道接入</span>
+              <span className={styles.newbieTag}>🤖 多Agent配置</span>
+              <span className={styles.newbieTag}>⏰ Cron定时任务</span>
+              <span className={styles.newbieTag}>😭 踩坑血泪史</span>
+            </div>
+          </div>
+          <a href="/docs/getting-started/newbie-guide" className={styles.btnNewbie}>
+            开始阅读 →
+          </a>
+        </div>
+      </div>
+
       {/* Assessment Banner - 首页醒目位置 */}
       <div className={styles.assessmentBanner}>
         <span className={styles.assessmentBannerIcon}>📋</span>
