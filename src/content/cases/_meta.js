@@ -5,5 +5,6 @@ export default {
   'multi-agent': '多 Agent 架构',
   'cron-heartbeat': '定时任务与提醒',
   'browser-automation': '浏览器自动化',
-  'mobile-node': '手机远程控制'
+  'mobile-node': '手机远程控制',
+  'awesome-usecases': '🌟 社区用例集（40+）'
 }
