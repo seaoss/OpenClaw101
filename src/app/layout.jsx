@@ -118,13 +118,13 @@ export default async function RootLayout({ children }) {
     <html lang="zh" dir="ltr" suppressHydrationWarning>
       <Head 
         faviconGlyph="🦞"
-        script={
-          <script 
-            async 
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
-            crossorigin="anonymous"
-          />
-        }
+        // script={
+        //   <script 
+        //     async 
+        //     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
+        //     crossorigin="anonymous"
+        //   />
+        // }
       />
       <body>
         <Layout
