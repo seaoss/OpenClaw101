@@ -116,24 +116,16 @@ export default async function RootLayout({ children }) {
   const pageMap = await getPageMap()
   return (
     <html lang="zh" dir="ltr" suppressHydrationWarning>
-      <Head faviconGlyph="🦞" />
-      <head>
-        {/* Google AdSense */}
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
-          crossorigin="anonymous"
-        ></script>
-        
-        {/* 全局广告单元 */}
-        {/* <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-4168738332542023"
-             data-ad-slot="1234567890"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> */}
-      </head>
+      <Head 
+        faviconGlyph="🦞"
+        script={
+          <script 
+            async 
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
+            crossorigin="anonymous"
+          />
+        }
+      />
       <body>
         <Layout
           navbar={navbar}
