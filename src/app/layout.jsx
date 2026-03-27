@@ -29,7 +29,7 @@ export const metadata = {
     address: false,
     telephone: false,
   },
-  google-adsense-account: 'ca-pub-4168738332542023',
+  "google-adsense-account": 'ca-pub-4168738332542023',
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
