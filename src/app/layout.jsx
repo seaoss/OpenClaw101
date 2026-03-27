@@ -29,7 +29,6 @@ export const metadata = {
     address: false,
     telephone: false,
   },
-  "google-adsense-account": 'ca-pub-4168738332542023',
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
@@ -65,6 +64,9 @@ export const metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  verification: {
+    google: "ca-pub-4168738332542023",
   },
 }
 
@@ -118,15 +120,14 @@ export default async function RootLayout({ children }) {
     <html lang="zh" dir="ltr" suppressHydrationWarning>
       <Head 
         faviconGlyph="🦞"
-        // script={
-        //   <script 
-        //     async 
-        //     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
-        //     crossorigin="anonymous"
-        //   />
-        // }
+
       />
       <body>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
+          crossOrigin="anonymous"
+        ></script>
         <Layout
           navbar={navbar}
           footer={
