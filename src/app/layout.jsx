@@ -5,7 +5,7 @@ import { getPageMap } from 'nextra/page-map'
 import 'nextra-theme-docs/style.css'
 
 export const metadata = {
-  metadataBase: new URL('https://openclaw101.club'),
+  metadataBase: new URL('https://clawdocs.cc'),
   title: {
     default: 'OpenClaw101 - OpenClaw 中文教程',
     template: '%s - OpenClaw101'
@@ -29,16 +29,17 @@ export const metadata = {
     address: false,
     telephone: false,
   },
+  google-adsense-account: 'ca-pub-4168738332542023',
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
-    url: 'https://openclaw101.club',
+    url: 'https://clawdocs.cc',
     siteName: 'OpenClaw101',
     title: 'OpenClaw101 - OpenClaw 中文教程',
     description: '从零开始掌握 OpenClaw AI 助手框架。25+ 篇中文教程，覆盖安装部署、多渠道接入、进阶配置、实战案例。',
     images: [
       {
-        url: 'https://openclaw101.club/og-image.png',
+        url: 'https://clawdocs.cc/og-image.png',
         width: 1200,
         height: 630,
         alt: 'OpenClaw101 - 从零开始掌握 OpenClaw AI 助手框架',
@@ -49,10 +50,10 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'OpenClaw101 - OpenClaw 中文教程',
     description: '从零开始掌握 OpenClaw AI 助手框架。25+ 篇中文教程，覆盖安装部署、多渠道接入、进阶配置、实战案例。',
-    images: ['https://openclaw101.club/og-image.png'],
+    images: ['https://clawdocs.cc/og-image.png'],
   },
   alternates: {
-    canonical: 'https://openclaw101.club',
+    canonical: 'https://clawdocs.cc',
   },
   robots: {
     index: true,
@@ -116,6 +117,23 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="zh" dir="ltr" suppressHydrationWarning>
       <Head faviconGlyph="🦞" />
+      <head>
+        {/* Google AdSense */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4168738332542023"
+          crossorigin="anonymous"
+        ></script>
+        
+        {/* 全局广告单元 */}
+        {/* <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-4168738332542023"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> */}
+      </head>
       <body>
         <Layout
           navbar={navbar}
