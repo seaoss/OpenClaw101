@@ -30,7 +30,7 @@ export default function AssessmentLayout({ children }) {
   return (
     <div style={{ minHeight: '100vh' }}>
       {/* Back to home nav */}
-      <nav style={{
+      {/* <nav style={{
         padding: '12px 24px',
         borderBottom: '1px solid #e5e7eb',
         display: 'flex',
@@ -53,7 +53,7 @@ export default function AssessmentLayout({ children }) {
         }}>
           📖 教程
         </a>
-      </nav>
+      </nav> */}
       {children}
     </div>
   )
