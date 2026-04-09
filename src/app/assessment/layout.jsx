@@ -46,7 +46,7 @@ export default function AssessmentLayout({ children }) {
           textDecoration: 'none',
           color: 'inherit',
         }}>
-          🦞 OpenClaw101
+          🦞 ClawDocs
         </a>
         <span style={{ color: '#999' }}>|</span>
         <a href="/docs/getting-started/what-is-openclaw" style={{

@@ -6,11 +6,11 @@ export function WebSiteJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "OpenClaw101",
+    name: "ClawDocs",
     alternateName: "OpenClaw 中文教程",
     url: "https://clawdocs.cc",
     description:
-      "OpenClaw101 是一个全面的 OpenClaw 中文教程网站，帮助你从零开始掌握 OpenClaw AI 助手框架。",
+      "ClawDocs 是一个全面的 OpenClaw 中文教程网站，帮助你从零开始掌握 OpenClaw AI 助手框架。",
     inLanguage: "zh-CN",
     potentialAction: {
       "@type": "SearchAction",
@@ -34,11 +34,11 @@ export function OrganizationJsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "OpenClaw101",
+    name: "ClawDocs",
     url: "https://clawdocs.cc",
     logo: "https://clawdocs.cc/og-image.png",
-    description: "OpenClaw 中文教程网站，提供从入门到精通的完整学习资源。",
-    sameAs: ["https://github.com/Tahitee/OpenClaw101.club"],
+    description: "ClawDocs 中文教程网站，提供从入门到精通的完整学习资源。",
+    sameAs: ["https://github.com/seaoss/OpenClaw101.club"],
   };
 
   return (
@@ -108,12 +108,12 @@ export function ArticleJsonLd({
     dateModified: dateModified || new Date().toISOString().split("T")[0],
     author: {
       "@type": "Organization",
-      name: "OpenClaw101",
+      name: "ClawDocs",
       url: "https://clawdocs.cc",
     },
     publisher: {
       "@type": "Organization",
-      name: "OpenClaw101",
+      name: "ClawDocs",
       logo: {
         "@type": "ImageObject",
         url: "https://clawdocs.cc/og-image.png",
@@ -122,7 +122,7 @@ export function ArticleJsonLd({
     inLanguage: "zh-CN",
     isPartOf: {
       "@type": "WebSite",
-      name: "OpenClaw101",
+      name: "ClawDocs",
       url: "https://clawdocs.cc",
     },
   };

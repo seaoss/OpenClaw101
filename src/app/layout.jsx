@@ -8,7 +8,7 @@ export const metadata = {
   metadataBase: new URL("https://clawdocs.cc"),
   title: {
     default: "ClawDocs - OpenClaw 中文教程",
-    template: "%s - OpenClaw101",
+    template: "%s - ClawDocs",
   },
   description:
     "ClawDocs 是一个全面的 OpenClaw 中文教程网站，帮助你从零开始掌握 OpenClaw AI 助手框架。包含 25+ 篇教程，覆盖安装部署、多渠道接入、进阶配置和实战案例。",
@@ -91,7 +91,7 @@ export default async function RootLayout({ children }) {
     <Navbar
       logo={
         <span style={{ fontWeight: "bold", fontSize: "1.2em" }}>
-          🦞 OpenClaw101
+          🦞 ClawDocs
         </span>
       }
       projectLink="https://github.com/seaoss/OpenClaw101.club"
